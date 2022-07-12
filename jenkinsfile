@@ -259,23 +259,44 @@ pipeline {
                     script {
                         //def messageWithChanges = sh (script: 'cat changedFiles.txt',returnStdout: true).trim()
                         if (env.CHANGE_TARGET == 'master') {
-                                    "master" : { 
+                            parallel (
+                                    "naprod" : {
                                         withAnt(installation: 'Ant', jdk: 'Java 9') {
-                                            runAntTask('validation', 'pocorg', 'test')
+                                            runAntTask('validation', 'naprod', 'prod')
+                                        }
+                                    },
+                                    "euprod" : {
+                                        withAnt(installation: 'Ant', jdk: 'Java 9') {
+                                            runAntTask('validation', 'euprod', 'prod')
                                         }
                                     }
+                            )
                         } else if (env.CHANGE_TARGET == 'merge') {
-                                    "merge" : {
+                            parallel (
+                                    "namerge" : {
                                         withAnt(installation: 'Ant', jdk: 'Java 9') {
-                                            runAntTask('validation', 'merge', 'test')
+                                            runAntTask('validation', 'namerge', 'test')
+                                        }
+                                    },
+                                    "eumerge" : {
+                                        withAnt(installation: 'Ant', jdk: 'Java 9') {
+                                            runAntTask('validation', 'eumerge', 'test')
                                         }
                                     }
+                            )
                         } else if (env.CHANGE_TARGET == 'develop') {
-                                    "devint" : {
+                            parallel (
+                                    "nadevint" : {
                                         withAnt(installation: 'Ant', jdk: 'Java 9') {
                                             runAntTask('validation', 'develop', 'test')
                                         }
+                                    },
+                                    "eudevint" : {
+                                        withAnt(installation: 'Ant', jdk: 'Java 9') {
+                                            runAntTask('validation', 'eudev', 'test')
+                                        }
                                     }
+                            )
                         }
                         //def messageWithChanges = sh (script: 'cat changedFiles.txt',returnStdout: true).trim()
                         else {
@@ -320,7 +341,7 @@ pipeline {
                 lock(env.JOB_BASE_NAME){
                     script {
                         if (env.GIT_BRANCH == 'master') {
-                                    "master" :  {
+                                    "main" :  {
                                         withAnt(installation: 'Ant', jdk: 'Java 9') {
                                             runAntTask('deploy', 'pocorg', 'test')
                                         }
