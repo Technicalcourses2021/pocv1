@@ -6,6 +6,7 @@ void checkoutRevisionBranch(String branchName) {
               submoduleCfg: [],
               userRemoteConfigs: [[credentialsId: 'pocuser', url: 'https://mygithub.gsk.com/sxp14858/pocproject.git']]])
 }
+
 void checkoutRevisionFile() {
     echo sh(returnStdout: true, script: 'env')
     checkoutRevisionBranch('Master')
